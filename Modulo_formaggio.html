@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Modulo Ordini Formaggio</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        h3 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Modulo Ordini Formaggio</h2>
+    <form id="orderForm" onsubmit="aggiungiOrdine(); return false;">
+        <label>Nome Cliente: <input type="text" id="nomeCliente" required></label><br><br>
+        <table>
+            <tr>
+                <th>Stagionatura</th>
+                <th>Prezzo al kg (€)</th>
+                <th>Quantità (kg)</th>
+                <th>Totale (€)</th>
+            </tr>
+            <tr>
+                <td>Fresco</td>
+                <td>10,00</td>
+                <td><input type="number" id="qtyFresco" value="0" min="0" step="0.1" onchange="calcolaTotale()"></td>
+                <td id="totalFresco">0,00</td>
+            </tr>
+            <tr>
+                <td>Semi-stagionato</td>
+                <td>12,00</td>
+                <td><input type="number" id="qtySemi" value="0" min="0" step="0.1" onchange="calcolaTotale()"></td>
+                <td id="totalSemi">0,00</td>
+            </tr>
+            <tr>
+                <td>Stagionato</td>
+                <td>15,00</td>
+                <td><input type="number" id="qtyStag" value="0" min="0" step="0.1" onchange="calcolaTotale()"></td>
+                <td id="totalStag">0,00</td>
+            </tr>
+        </table>
+        <h3>Totale Ordine (€): <span id="grandTotal">0,00</span></h3>
+        <button type="submit">Aggiungi Ordine</button>
+    </form>
+
+    <h2>Riepilogo Ordini</h2>
+    <table id="riepilogo">
+        <thead>
+            <tr>
+                <th>Nome Cliente</th>
+                <th>Fresco (kg)</th>
+                <th>Semi-stagionato (kg)</th>
+                <th>Stagionato (kg)</th>
+                <th>Totale (€)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Righe degli ordini inseriti -->
+        </tbody>
+    </table>
+    <h3>Totale Generale (€): <span id="totaleGenerale">0,00</span></h3>
+
+    <script>
+        let totaleGenerale = 0;
+
+        function calcolaTotale() {
+            const prezzi = { fresco: 10, semi: 12, stag: 15 };
+            const qFresco = parseFloat(document.getElementById('qtyFresco').value) || 0;
+            const qSemi = parseFloat(document.getElementById('qtySemi').value) || 0;
+            const qStag = parseFloat(document.getElementById('qtyStag').value) || 0;
+
+            const totFresco = qFresco * prezzi.fresco;
+            const totSemi = qSemi * prezzi.semi;
+            const totStag = qStag * prezzi.stag;
+
+            document.getElementById('totalFresco').innerText = totFresco.toFixed(2);
+            document.getElementById('totalSemi').innerText = totSemi.toFixed(2);
+            document.getElementById('totalStag').innerText = totStag.toFixed(2);
+
+            const grandTotal = totFresco + totSemi + totStag;
+            document.getElementById('grandTotal').innerText = grandTotal.toFixed(2);
+        }
+
+        function aggiungiOrdine() {
+            const nome = document.getElementById('nomeCliente').value.trim();
+            if (nome === "") {
+                alert("Inserisci il nome del cliente!");
+                return;
+            }
+
+            const qFresco = parseFloat(document.getElementById('qtyFresco').value) || 0;
+            const qSemi = parseFloat(document.getElementById('qtySemi').value) || 0;
+            const qStag = parseFloat(document.getElementById('qtyStag').value) || 0;
+            const tot = parseFloat(document.getElementById('grandTotal').innerText) || 0;
+
+            const table = document.getElementById('riepilogo').getElementsByTagName('tbody')[0];
+            const row = table.insertRow();
+            row.insertCell(0).innerText = nome;
+            row.insertCell(1).innerText = qFresco.toFixed(1);
+            row.insertCell(2).innerText = qSemi.toFixed(1);
+            row.insertCell(3).innerText = qStag.toFixed(1);
+            row.insertCell(4).innerText = tot.toFixed(2);
+
+            totaleGenerale += tot;
+            document.getElementById('totaleGenerale').innerText = totaleGenerale.toFixed(2);
+
+            // Reset del modulo
+            document.getElementById('orderForm').reset();
+            calcolaTotale();
+        }
+    </script>
+</body>
+</html>
